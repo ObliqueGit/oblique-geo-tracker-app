@@ -1,8 +1,6 @@
 import OpenAI from 'openai'
 import type { RawQueryResult } from '@/lib/types'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 const MODEL = 'gpt-4o'
 
 // System prompt instructs the model to answer naturally — no special formatting
@@ -15,6 +13,7 @@ export async function queryChatGPT(
   promptText: string,
   promptId: string
 ): Promise<RawQueryResult> {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const start = Date.now()
 
   const response = await openai.chat.completions.create({

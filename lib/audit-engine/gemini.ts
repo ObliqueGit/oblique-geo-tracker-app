@@ -1,8 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { RawQueryResult } from '@/lib/types'
 
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-
 const MODEL = 'gemini-1.5-pro'
 
 const SYSTEM_INSTRUCTION = `You are a helpful assistant. Answer the user's question directly and accurately.
@@ -12,6 +10,7 @@ export async function queryGemini(
   promptText: string,
   promptId: string
 ): Promise<RawQueryResult> {
+  const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genai.getGenerativeModel({
     model: MODEL,
     systemInstruction: SYSTEM_INSTRUCTION,

@@ -3,9 +3,6 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 import { Resend } from 'resend'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -68,6 +65,8 @@ async function generateReportAsync(
   db: any
 ) {
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const resend = new Resend(process.env.RESEND_API_KEY)
     const overallScore = scores?.find((s) => s.platform === 'overall')
     const chatgptScore = scores?.find((s) => s.platform === 'chatgpt')
     const geminiScore = scores?.find((s) => s.platform === 'gemini')
