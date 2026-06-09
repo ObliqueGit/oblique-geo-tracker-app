@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Audit, AuditResult, Client, Competitor, Prompt, VisibilityScore } from '@/lib/types'
+import RunAuditButton from '@/app/components/RunAuditButton'
 
 // ─── Sub-components ───────────────────────────────────────
 
@@ -195,7 +196,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             >
               Edit client
             </Link>
-            <RunAuditButton clientId={client.id} />
+            <RunAuditButton clientId={client.id} variant="solid" />
           </div>
         </div>
       </header>
@@ -372,15 +373,5 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </div>
       </main>
     </div>
-  )
-}
-
-function RunAuditButton({ clientId }: { clientId: string }) {
-  return (
-    <button
-      className="text-xs font-medium bg-black text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
-    >
-      Run audit
-    </button>
   )
 }

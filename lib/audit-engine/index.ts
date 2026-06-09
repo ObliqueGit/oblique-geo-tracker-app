@@ -10,7 +10,13 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { queryChatGPT } from './openai'
 import { queryGemini } from './gemini'
 import { queryClaude } from './claude'
-import { parseBrandMention, parseCompetitorMentions } from './parser'
+import {
+  parseBrandMention,
+  parseCompetitorMentions,
+  extractCitationDomains,
+  isClientDomainCited,
+  detectPotentialHallucinations,
+} from './parser'
 import { calculateScores } from './scorer'
 import type { Audit, AuditResult, Client, Competitor, Platform, Prompt, RawQueryResult } from '@/lib/types'
 
@@ -88,7 +94,7 @@ export async function runAudit(auditId: string): Promise<void> {
         }
 
         // Parse brand mention from raw response
-        const { mentioned, rank, sentiment } = parseBrandMention(
+        const { mentioned, rank, sentiment, mention_status } = parseBrandMention(
           rawResult.raw_response,
           client.name,
           client.brand_aliases
@@ -100,6 +106,20 @@ export async function runAudit(auditId: string): Promise<void> {
           activeCompetitors
         )
 
+        // Citation analysis — which domains the AI cited, and whether the
+        // client's own domain is among them (drives the SIR metric).
+        const citation_urls = extractCitationDomains(rawResult.raw_response)
+        const is_source_cited = isClientDomainCited(citation_urls, client.website)
+
+        // Heuristic hallucination flags — specific brand claims that need human review.
+        const hallucination_flags = detectPotentialHallucinations(
+          rawResult.raw_response,
+          client.name,
+          client.brand_aliases,
+          platform,
+          prompt.text
+        )
+
         const resultRow = {
           audit_id: auditId,
           prompt_id: prompt.id,
@@ -107,8 +127,12 @@ export async function runAudit(auditId: string): Promise<void> {
           raw_response: rawResult.raw_response,
           brand_mentioned: mentioned,
           brand_rank: rank,
+          mention_status,
           competitor_data,
           sentiment,
+          citation_urls,
+          is_source_cited,
+          hallucination_flags,
           model_used: rawResult.model_used,
           tokens_used: rawResult.tokens_used,
           latency_ms: rawResult.latency_ms,

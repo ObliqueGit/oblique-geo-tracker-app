@@ -137,7 +137,7 @@ function buildReportHTML(client: any, report: any, scores: any[]): string {
   <h2>Strategic Summary</h2>
   ${summaryHtml}
 
-  <p class="disclaimer">Visibility scores reflect the percentage of tracked prompts in which ${client.name}'s brand appeared in responses from ChatGPT, Google Gemini, and Perplexity. Scores are approximate indicators derived from live API calls — AI models are non-deterministic and results may vary between runs. No data in this report is fabricated or estimated.</p>
+  <p class="disclaimer">Visibility scores reflect the percentage of tracked prompts in which ${client.name}'s brand appeared in responses from ChatGPT, Google Gemini, and Claude. Scores are approximate indicators derived from live API calls — AI models are non-deterministic and results may vary between runs. No data in this report is fabricated or estimated.</p>
   <p class="agency">Prepared by Oblique · oblique.agency</p>
 </div>
 </body>

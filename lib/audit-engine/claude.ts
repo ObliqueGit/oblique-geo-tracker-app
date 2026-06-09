@@ -1,13 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { RawQueryResult } from '@/lib/types'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const MODEL = 'claude-3-5-sonnet-20241022'
 
 export async function queryClaude(
   promptText: string,
   promptId: string
 ): Promise<RawQueryResult> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   const start = Date.now()
 
   const message = await client.messages.create({

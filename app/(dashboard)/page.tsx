@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Client, VisibilityScore } from '@/lib/types'
+import RunAuditButton from '@/app/components/RunAuditButton'
 
 function ScorePill({ score, delta }: { score: number | null; delta?: number | null }) {
   if (score === null) return <span className="text-gray-300 text-sm">—</span>
@@ -168,7 +169,7 @@ export default async function DashboardPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-50">
-                  {['Client', 'Industry', 'Overall', 'ChatGPT / Gemini / Perplexity', 'Last audit', 'Actions'].map((h) => (
+                  {['Client', 'Industry', 'Overall', 'ChatGPT / Gemini / Claude', 'Last audit', 'Actions'].map((h) => (
                     <th
                       key={h}
                       className="px-6 py-3 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider"
@@ -255,24 +256,9 @@ export default async function DashboardPage() {
 
         {/* Accuracy disclaimer */}
         <p className="text-xs text-gray-400 mt-6 leading-relaxed max-w-2xl">
-          Visibility scores reflect the percentage of tracked prompts in which your client's brand appeared in live API responses from ChatGPT, Gemini, and Perplexity. Scores are approximate — AI responses are non-deterministic and may vary between runs. No data is fabricated.
+          Visibility scores reflect the percentage of tracked prompts in which your client's brand appeared in live API responses from ChatGPT, Gemini, and Claude. Scores are approximate — AI responses are non-deterministic and may vary between runs. No data is fabricated.
         </p>
       </main>
     </div>
-  )
-}
-
-// Thin client component for the audit button (needs interactivity)
-function RunAuditButton({ clientId }: { clientId: string }) {
-  return (
-    <form action={`/api/audit/run`} method="POST">
-      <input type="hidden" name="client_id" value={clientId} />
-      <button
-        type="submit"
-        className="text-xs font-medium text-blue-600 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
-      >
-        Run audit
-      </button>
-    </form>
   )
 }
