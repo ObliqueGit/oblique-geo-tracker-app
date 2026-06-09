@@ -1,8 +1,0 @@
-{
-  "files": ["app/**/*.tsx", "app/**/*.jsx"],
-  "framework": "next",
-  "devServer": "http://localhost:3000",
-  "insertBefore": "</body>",
-  "commentSyntax": "jsx",
-  "cspChecked": true
-}
