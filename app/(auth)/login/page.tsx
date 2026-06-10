@@ -29,63 +29,79 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-6 h-6 bg-black rounded" />
-            <span className="font-semibold text-[15px] tracking-tight">Oblique GEO</span>
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--surface)',
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: 380, padding: '40px 20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, marginBottom: 18 }}>
+            <div className="nav-logo" />
+            <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)' }}>
+              Oblique GEO
+            </span>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Staff sign in</h1>
-          <p className="text-sm text-gray-500 mt-1">Internal access only</p>
+          <div style={{ fontSize: 19, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-.02em' }}>
+            Staff sign in
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 5 }}>Internal access only</div>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
+        <form onSubmit={handleLogin} className="card cp" style={{ boxShadow: 'var(--shadow)' }}>
           {error && (
-            <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3 rounded-lg">
+            <div
+              style={{
+                background: 'var(--danger-bg)',
+                border: '1px solid var(--danger-border)',
+                color: 'var(--danger)',
+                fontSize: 12.5,
+                padding: '10px 12px',
+                borderRadius: 'var(--r)',
+                marginBottom: 16,
+              }}
+            >
               {error}
             </div>
           )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Email
-            </label>
+          <div className="form-group">
+            <label className="form-label">Email</label>
             <input
+              className="form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition-all"
-              placeholder="you@oblique.agency"
+              placeholder="you@oblique.com.my"
             />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Password
-            </label>
+          <div className="form-group" style={{ marginBottom: 22 }}>
+            <label className="form-label">Password</label>
             <input
+              className="form-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition-all"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white text-sm font-medium py-2.5 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="btn btn-dark"
+            style={{ width: '100%', justifyContent: 'center', padding: 11, fontSize: 13 }}
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--faint)', marginTop: 14 }}>
           Access restricted to Oblique staff.
-        </p>
+        </div>
       </div>
     </div>
   )

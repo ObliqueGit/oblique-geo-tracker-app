@@ -53,24 +53,27 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center gap-2 text-sm">
-          <Link href="/" className="text-gray-400 hover:text-gray-700 transition-colors">Dashboard</Link>
-          <span className="text-gray-200">/</span>
-          <Link href={`/clients/${id}`} className="text-gray-400 hover:text-gray-700 transition-colors">{c.name}</Link>
-          <span className="text-gray-200">/</span>
-          <span className="text-gray-900 font-medium">Edit</span>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div className="topnav">
+        <div className="nav-left">
+          <div className="nav-logo" />
+          <Link href="/" className="nav-dim">Dashboard</Link>
+          <span className="nav-sep">/</span>
+          <Link href={`/clients/${id}`} className="nav-dim">{c.name}</Link>
+          <span className="nav-sep">/</span>
+          <span style={{ fontWeight: 500 }}>Edit</span>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Edit {c.name}</h1>
-          <p className="text-sm text-gray-500 mt-1">Update brand details, competitors, and tracked prompts.</p>
+      <div className="main" style={{ maxWidth: 720, padding: '36px 28px' }}>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>Edit {c.name}</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
+            Update brand details, competitors, and tracked prompts.
+          </div>
         </div>
         <ClientForm mode="edit" clientId={id} initial={initial} />
-      </main>
+      </div>
     </div>
   )
 }

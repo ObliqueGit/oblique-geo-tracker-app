@@ -9,24 +9,25 @@ export default async function NewClientPage() {
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center gap-2 text-sm">
-          <Link href="/" className="text-gray-400 hover:text-gray-700 transition-colors">Dashboard</Link>
-          <span className="text-gray-200">/</span>
-          <span className="text-gray-900 font-medium">New client</span>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div className="topnav">
+        <div className="nav-left">
+          <div className="nav-logo" />
+          <Link href="/" className="nav-dim">Dashboard</Link>
+          <span className="nav-sep">/</span>
+          <span style={{ fontWeight: 500 }}>Add client</span>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Add a client</h1>
-          <p className="text-sm text-gray-500 mt-1">
+      <div className="main" style={{ maxWidth: 720, padding: '36px 28px' }}>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>Add a client</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
             Set up the brand, competitors, and the prompts to track across ChatGPT, Gemini, and Claude.
-          </p>
+          </div>
         </div>
         <ClientForm mode="create" />
-      </main>
+      </div>
     </div>
   )
 }
