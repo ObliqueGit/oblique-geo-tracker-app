@@ -21,18 +21,24 @@ interface ParsedMention {
  * require a dedicated model call; this heuristic avoids extra API cost while
  * being transparent about its limitations.
  */
+/**
+ * Word-boundary brand matching — "HOG" must appear as the standalone token
+ * "HOG", not inside "hogwash"; "GNC" must not match inside other words.
+ */
+function matchesName(text: string, name: string): boolean {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(?<![\\w])${escaped}(?![\\w])`, 'i').test(text)
+}
+
 export function parseBrandMention(
   rawResponse: string,
   brandName: string,
   brandAliases: string[]
 ): ParsedMention {
   const allNames = [brandName, ...brandAliases].filter(Boolean)
-  const normalised = rawResponse.toLowerCase()
 
-  // Check if any alias appears in the response
-  const mentioned = allNames.some((name) =>
-    normalised.includes(name.toLowerCase())
-  )
+  // Check if any alias appears in the response (whole-word match)
+  const mentioned = allNames.some((name) => matchesName(rawResponse, name))
 
   if (!mentioned) {
     return { mentioned: false, rank: null, sentiment: null, mention_status: 'absent' }
@@ -63,8 +69,7 @@ export function parseCompetitorMentions(
   const result: Record<string, number | null> = {}
   for (const comp of competitors) {
     const allNames = [comp.name, ...comp.brand_aliases].filter(Boolean)
-    const normalised = rawResponse.toLowerCase()
-    const mentioned = allNames.some((n) => normalised.includes(n.toLowerCase()))
+    const mentioned = allNames.some((n) => matchesName(rawResponse, n))
     result[comp.name] = mentioned ? estimateRank(rawResponse, allNames) : null
   }
   return result
@@ -92,10 +97,9 @@ function estimateRank(text: string, targetNames: string[]): number | null {
     }
   }
 
-  // Find first candidate that matches a target name
+  // Find first candidate that matches a target name (whole-word)
   for (let i = 0; i < candidates.length; i++) {
-    const candidateLower = candidates[i].toLowerCase()
-    if (targetNames.some((n) => candidateLower.includes(n.toLowerCase()))) {
+    if (targetNames.some((n) => matchesName(candidates[i], n))) {
       return i + 1 // 1-based
     }
   }
@@ -171,8 +175,7 @@ export function detectPotentialHallucinations(
   ]
 
   for (const sentence of sentences) {
-    const lower = sentence.toLowerCase()
-    const containsBrand = allNames.some((n) => lower.includes(n.toLowerCase()))
+    const containsBrand = allNames.some((n) => matchesName(sentence, n))
     if (!containsBrand) continue
 
     for (const pattern of alertPatterns) {
@@ -212,8 +215,7 @@ function estimateSentiment(text: string, targetNames: string[]): Sentiment | nul
   const relevantSentences: string[] = []
 
   for (const sentence of sentences) {
-    const lower = sentence.toLowerCase()
-    if (targetNames.some((n) => lower.includes(n.toLowerCase()))) {
+    if (targetNames.some((n) => matchesName(sentence, n))) {
       relevantSentences.push(sentence)
     }
   }

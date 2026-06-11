@@ -149,4 +149,7 @@ export interface RawQueryResult {
   model_used: string
   tokens_used: number
   latency_ms: number
+  // Full URLs the platform's own web-search/grounding cited for this answer.
+  // These are real retrieval citations, not regex guesses from the text.
+  citations?: string[]
 }

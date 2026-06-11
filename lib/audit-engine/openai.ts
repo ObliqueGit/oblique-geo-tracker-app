@@ -3,12 +3,9 @@ import type { RawQueryResult } from '@/lib/types'
 
 const MODEL = 'gpt-4o'
 
-// System prompt instructs the model to answer naturally — no special formatting
-// that might artificially suppress or boost brand mentions.
-const SYSTEM_PROMPT = `You are a helpful assistant. Answer the user's question directly and accurately.
-Do not add disclaimers about not being able to browse the web. Provide a factual, balanced response
-based on your knowledge. If you are unaware of specific entities, say so honestly.`
-
+// Web-grounded query: ChatGPT answers via the Responses API with the
+// web_search tool enabled — measuring live AI-search visibility (what
+// ChatGPT retrieves and cites), not training-data recall.
 export async function queryChatGPT(
   promptText: string,
   promptId: string
@@ -16,29 +13,49 @@ export async function queryChatGPT(
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const start = Date.now()
 
-  const response = await openai.chat.completions.create({
+  const response: any = await (openai as any).responses.create({
     model: MODEL,
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: promptText },
-    ],
-    temperature: 0.3, // lower temperature for more consistent, deterministic results
-    max_tokens: 1024,
+    tools: [{ type: 'web_search' }],
+    instructions:
+      'You are a helpful assistant. Answer the question directly and factually for a user in Malaysia.',
+    input: promptText,
   })
 
   const latency_ms = Date.now() - start
-  const choice = response.choices[0]
 
-  if (!choice?.message?.content) {
+  // output_text is the SDK convenience aggregation of all text output
+  const content: string =
+    response.output_text ??
+    (response.output ?? [])
+      .filter((item: any) => item.type === 'message')
+      .flatMap((item: any) => item.content ?? [])
+      .filter((c: any) => c.type === 'output_text')
+      .map((c: any) => c.text)
+      .join('\n')
+
+  if (!content) {
     throw new Error(`ChatGPT returned no content for prompt ${promptId}`)
+  }
+
+  // url_citation annotations are the pages ChatGPT actually cited
+  const citations = new Set<string>()
+  for (const item of response.output ?? []) {
+    if (item.type !== 'message') continue
+    for (const c of item.content ?? []) {
+      for (const a of c.annotations ?? []) {
+        if (a?.type === 'url_citation' && a.url) citations.add(a.url)
+      }
+    }
   }
 
   return {
     platform: 'chatgpt',
     prompt_id: promptId,
-    raw_response: choice.message.content,
-    model_used: response.model,
-    tokens_used: response.usage?.total_tokens ?? 0,
+    raw_response: content,
+    model_used: response.model ?? MODEL,
+    tokens_used:
+      (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0),
     latency_ms,
+    citations: Array.from(citations),
   }
 }
